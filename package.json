@@ -6,14 +6,14 @@
     "n8n-community-node-package"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/n8n-io/n8n-nodes-starter",
+  "homepage": "https://github.com/drsounds/musicgpt-n8n-node",
   "author": {
     "name": "Alexander Forselius",
     "email": "drsounds@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/drsounds/n8n-nodes-musicgpt.git"
+    "url": "git+https://github.com/drsounds/musicgpt-n8n-node"
   },
   "main": "index.js",
   "scripts": {
@@ -35,8 +35,8 @@
     "n8nNodesFolder": "dist"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
     "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "copyfiles": "^2.4.0",
@@ -51,6 +51,7 @@
     "typescript": "^5.2.0"
   },
   "dependencies": {
+    "@n8n/node-cli": "^0.15.0",
     "n8n-workflow": "*",
     "request": "^2.88.2"
   }
