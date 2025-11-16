@@ -1,0 +1,141 @@
+{
+  "name": "MusicGPT Webhook Example",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "musicgpt-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "musicgpt-webhook-example"
+    },
+    {
+      "parameters": {
+        "prompt": "={{ $json.prompt }}",
+        "music_style": "={{ $json.music_style || 'Pop' }}",
+        "lyrics": "={{ $json.lyrics || '' }}",
+        "options": {
+          "webhook_url": "={{ $node['Webhook'].json.webhookUrl }}"
+        }
+      },
+      "name": "MusicGPT",
+      "type": "n8n-nodes-musicgpt.musicGpt",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  success: true,\n  message: 'Music generation started',\n  task_id: $json.task_id,\n  eta: $json.eta,\n  credit_estimate: $json.credit_estimate\n} }}"
+      },
+      "name": "Initial Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "musicgpt-callback",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Callback Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        500
+      ],
+      "webhookId": "musicgpt-callback"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log or process the completed music\nconst musicData = $json;\n\nconsole.log('Music generation completed:', {\n  task_id: musicData.task_id,\n  title: musicData.title,\n  duration: musicData.conversion_duration,\n  mp3_url: musicData.conversion_path,\n  wav_url: musicData.conversion_path_wav\n});\n\n// You could:\n// - Save to database\n// - Send notification\n// - Download the file\n// - Process further\n\nreturn [{\n  json: {\n    success: true,\n    message: 'Music generation completed successfully',\n    task_id: musicData.task_id,\n    title: musicData.title,\n    duration: musicData.conversion_duration,\n    mp3_url: musicData.conversion_path,\n    wav_url: musicData.conversion_path_wav,\n    lyrics: musicData.lyrics,\n    timestamped_lyrics: musicData.lyrics_timestamped\n  }\n}];"
+      },
+      "name": "Process Completed Music",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}"
+      },
+      "name": "Callback Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        680,
+        500
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "MusicGPT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MusicGPT": {
+      "main": [
+        [
+          {
+            "node": "Initial Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Completed Music",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Completed Music": {
+      "main": [
+        [
+          {
+            "node": "Callback Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1"
+}

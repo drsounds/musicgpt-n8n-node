@@ -1,0 +1,70 @@
+{
+  "name": "MusicGPT Basic Example",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Example input data for MusicGPT\nreturn [\n  {\n    json: {\n      prompt: \"A cheerful pop song about friendship and adventure\",\n      music_style: \"Pop\",\n      lyrics: \"We're friends forever\\nThrough every storm and weather\\nTogether we'll explore\\nAnd find what we're looking for\"\n    }\n  }\n];"
+      },
+      "name": "Prepare Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "prompt": "={{ $json.prompt }}",
+        "music_style": "={{ $json.music_style }}",
+        "lyrics": "={{ $json.lyrics }}"
+      },
+      "name": "MusicGPT",
+      "type": "n8n-nodes-musicgpt.musicGpt",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process the MusicGPT response\nconst items = $input.all();\nconst processed = items.map(item => {\n  const data = item.json;\n  return {\n    json: {\n      ...data,\n      message: `Music generation started! Task ID: ${data.task_id}`,\n      estimated_time: `${data.eta} seconds`,\n      estimated_cost: `$${data.credit_estimate}`,\n      tracking_url: `https://musicgpt.com/track/${data.task_id}`\n    }\n  };\n});\n\nreturn processed;"
+      },
+      "name": "Process Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Prepare Input": {
+      "main": [
+        [
+          {
+            "node": "MusicGPT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MusicGPT": {
+      "main": [
+        [
+          {
+            "node": "Process Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1"
+}
