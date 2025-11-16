@@ -1,5 +1,5 @@
 {
-  "name": "n8n-nodes-musicgpt",
+  "name": "@buddhaflow/n8n-nodes-musicgpt",
   "version": "1.0.0",
   "description": "n8n node for MusicGPT API to create AI-generated music",
   "keywords": [
