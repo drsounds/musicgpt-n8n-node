@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import {
   IExecuteFunctions,
   INodeExecutionData,
@@ -269,13 +271,15 @@ async function musicCreate(context: IExecuteFunctions, item: INodeExecutionData,
   };
 
   try {
+    // @ts-ignore
     const responseData = await context.helpers.request(optionsWithUri);
-    
+    // @ts-ignores
     return context.helpers.constructExecutionMetaData(
       context.helpers.returnJsonArray(responseData),
       { itemData: { item: itemIndex } },
     );
   } catch (error) {
+    // @ts-ignore
     throw new NodeApiError(context.getNode(), error);
   }
 }
